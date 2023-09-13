@@ -23,7 +23,7 @@ class MathQuizApp:
         self.root.bind("<Return>", lambda event=None: self.check_answer())
 
 
-        self.timer_label = tk.Label(root, text="0", font=("Arial", 18))
+        self.timer_label = tk.Label(root, text="", font=("Arial", 18))
         self.timer_label.pack()
 
         self.score_label = tk.Label(root, text="Score: 0", font=("Arial", 18))
@@ -36,6 +36,9 @@ class MathQuizApp:
         self.high_scores_button.pack()
 
         self.high_scores = []  # List to store high scores (e.g., (score, player_name))
+
+        self.settings_button = tk.Button(root, text="⚙️ Settings", command=self.open_settings)
+        self.settings_button.pack(side=tk.BOTTOM, pady =10)
 
         self.load_high_scores()  # Load high scores from a file if available
 
@@ -54,17 +57,17 @@ class MathQuizApp:
             self.update_timer_label()
             self.root.after(1000, self.update_timer)
         elif self.timer_seconds == 0 and self.game_in_progress:
-            
             self.end_game()
 
     def reset_game(self):
         self.score = 0
         self.questions_answered = 0
-        self.timer_seconds = 30
         self.update_score_label()
         self.update_timer_label()
         self.load_high_scores()
         self.game_in_progress = True
+        
+        
 
     def next_question(self):
         if self.timer_seconds <= 0:
@@ -138,7 +141,56 @@ class MathQuizApp:
         for i, (score, name) in enumerate(self.high_scores[:10]):
             high_scores_str += f"{i+1}. {name}: {score}\n"
         messagebox.showinfo("High Scores", high_scores_str)
+    
+    def open_settings(self):
+        # Create a new settings window
+        settings_window = tk.Toplevel(self.root)
+        settings_window.title("Settings")
+    
+        # Add label and entry widget for setting the number of seconds
+        seconds_label = tk.Label(settings_window, text="Time Duration (seconds):")
+        seconds_label.pack(pady=10)
+    
+        seconds_entry = tk.Entry(settings_window, font=("Arial", 18))
+        seconds_entry.insert(0, str(self.timer_seconds))  # Display the current value
+        seconds_entry.pack(pady=5)
+    
+        # Add label and option menu for selecting difficulty level
+        difficulty_label = tk.Label(settings_window, text="Difficulty Level:")
+        difficulty_label.pack(pady=10)
+    
+        difficulty_options = ["Easy", "Medium", "Hard"]
+        difficulty_var = tk.StringVar()
+        difficulty_var.set("Medium")  # Default difficulty level
+        difficulty_menu = tk.OptionMenu(settings_window, difficulty_var, *difficulty_options)
+        difficulty_menu.pack(pady=5)
+    
+        # Save settings button
+        save_button = tk.Button(settings_window, text="Save Settings", command=lambda: self.save_settings(settings_window, seconds_entry, difficulty_var))
+        save_button.pack(pady=20)
 
+    def save_settings(self, settings_window, seconds_entry, difficulty_var):
+        try:
+            # Get and validate user inputs
+            new_seconds = int(seconds_entry.get())
+            if new_seconds <= 0:   #!!! Add error handling for letters
+                messagebox.showerror("Invalid Input", "Please enter a positive number of seconds.")
+                return
+            
+            new_difficulty = difficulty_var.get()
+            
+            # Update app settings
+            self.timer_seconds = new_seconds  # Update the timer value based on user input
+            self.root.after(0, self.update_timer_label)
+            # Handle difficulty level settings here (e.g., adjust question generation logic)
+            
+            # Update timer label in the main window
+            self.update_timer_label()
+            
+            # Close the settings window
+            settings_window.destroy()
+        except ValueError:
+            messagebox.showerror("Invalid Input", "Please enter a valid number of seconds.")
 
 if __name__ == "__main__":
     root = tk.Tk()
