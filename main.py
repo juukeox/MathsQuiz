@@ -223,7 +223,6 @@ if __name__ == "__main__":
     app = MathQuizApp(root)
     root.mainloop()
 
-
     # edit problem function so no questions have 2+ decimal places. Can answer to 1 decimal place?
     #timer doesn't go down
     #layout
