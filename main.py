@@ -124,10 +124,7 @@ class MathQuizApp:
                 self.score += 1
                 self.update_score_label()
                 self.questions_answered += 1
-                if self.questions_answered < 10:
-                    self.next_question()
-                else:
-                    self.end_game()
+                self.next_question() 
             else:
                 self.next_question()
         except:
@@ -230,3 +227,4 @@ if __name__ == "__main__":
     # edit problem function so no questions have 2+ decimal places. Can answer to 1 decimal place?
     #timer doesn't go down
     #layout
+    # scoreboard is an average BUT correct answers are more valuable on longer runs
