@@ -82,10 +82,38 @@ class MathQuizApp:
         self.update_score_label()
 
     def generate_problem(self):
-        num1 = random.randint(1, 10)
-        num2 = random.randint(1, 10)
-        operator = random.choice(["+", "-", "*", "/"])
-        problem = f"{num1} {operator} {num2}"
+        if self.difficulty_var.get() == "Hard":
+            num1 = random.randint(1, 20)
+            num2 = random.randint(1, 20)
+            num3 = random.randint(1, 20)
+            operator1 = random.choice(["+", "-", "*", "/"])
+            operator2 = random.choice(["+", "-", "*", "/"])
+            problem = f"{num1} {operator1} {num2} {operator2} {num3}"
+        elif self.difficulty_var.get() == "Easy":
+            while True:
+                num1 = random.randint(1, 10)
+                num2 = random.randint(1, 10)
+                operator1 = random.choice(["+", "-", "*", "/"])
+                problem = f"{num1} {operator1} {num2}"
+                try:
+                    if int(eval(problem)) == eval(problem):
+                        return problem
+                except ZeroDivisionError:
+                    pass
+        else:
+            while True:
+                num1 = random.randint(1, 20)
+                num2 = random.randint(1, 20)
+                operator = random.choice(["+", "-", "*", "/"])
+                problem = f"{num1} {operator} {num2}"
+
+                # Check if the answer is an integer or has one decimal place
+                try:
+                    result = eval(problem)
+                    if int(result) == result or round(result, 1) == result or (result * 4) % 1 == 0.0:
+                        return problem
+                except ZeroDivisionError:
+                    pass
         return problem
 
     def check_answer(self):
@@ -181,6 +209,7 @@ class MathQuizApp:
             
             # Update app settings
             self.timer_seconds = new_seconds  # Update the timer value based on user input
+            self.difficulty_var = difficulty_var
             self.root.after(0, self.update_timer_label)
             # Handle difficulty level settings here (e.g., adjust question generation logic)
             
