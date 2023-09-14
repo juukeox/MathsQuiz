@@ -1,6 +1,7 @@
 import tkinter as tk
 import random
 from tkinter import messagebox
+from datetime import datetime
 
 class MathQuizApp:
     def __init__(self, root):
@@ -11,6 +12,9 @@ class MathQuizApp:
         self.timer_seconds = 30  # Initial timer value in seconds
         self.current_question = None
         self.questions_answered = 0
+
+        self.difficulty_var = tk.StringVar()
+        self.difficulty_var.set("Medium")
 
         self.problem_label = tk.Label(root, text="", font=("Arial", 24))
         self.problem_label.pack(pady=20)
@@ -39,6 +43,18 @@ class MathQuizApp:
 
         self.settings_button = tk.Button(root, text="⚙️ Settings", command=self.open_settings)
         self.settings_button.pack(side=tk.BOTTOM, pady =10)
+
+        # Add a label for the username entry
+        self.username_label = tk.Label(root, text="Enter Your Name:", font=("Arial", 18))
+        self.username_label.pack(pady=10)
+
+        # Add an entry widget for the username
+        self.username_entry = tk.Entry(root, font=("Arial", 18))
+        self.username_entry.pack(pady=5)
+
+        # Add a button to submit the username
+        self.submit_button = tk.Button(root, text="Submit", command=self.submit_username)
+        self.submit_button.pack(pady=10)
 
         self.load_high_scores()  # Load high scores from a file if available
 
@@ -136,21 +152,28 @@ class MathQuizApp:
     def update_timer_label(self):
         self.timer_label.config(text=f"Time Left: {self.timer_seconds} seconds")
 
-    def end_game(self):
+    def end_game(self):  #not being activated
         self.game_in_progress = False
         self.start_button.config(state=tk.NORMAL)
         messagebox.showinfo("Game Over", f"Your final score: {self.score}")
         self.save_high_score()
         self.load_high_scores()
-
-    def save_high_score(self):
-        player_name = messagebox.askstring("High Score", "Enter your name:")
+    
+    def submit_username(self):
+        player_name = self.username_entry.get()
         if player_name:
-            self.high_scores.append((self.score, player_name))
+            self.save_high_score(player_name)
+
+    def save_high_score(self, player_name="Unknown"): #add date to arguments?
+            current_date = datetime.now().strftime("%Y-%m-%d")
+            self.high_scores.append((self.score, player_name or "Unknown", current_date))
             self.high_scores.sort(reverse=True)
+            if len(self.high_scores) > 10:
+                self.high_scores = self.high_scores[:10]
+            
             with open("high_scores.txt", "w") as file:
-                for score, name in self.high_scores[:10]:  # Save the top 10 high scores
-                    file.write(f"{score}: {name}\n")
+                for score, name, date in self.high_scores:
+                    file.write(f"{score}: {name} ({date})\n")
 
     def load_high_scores(self):
         try:
@@ -163,8 +186,13 @@ class MathQuizApp:
 
     def show_high_scores(self):
         high_scores_str = "High Scores:\n"
-        for i, (score, name) in enumerate(self.high_scores[:10]):
-            high_scores_str += f"{i+1}. {name}: {score}\n"
+        for i, score_info in enumerate(self.high_scores[:10]):
+            if len(score_info) == 3:
+                name, score, date = score_info
+                high_scores_str += f"{i+1}. {name}: {score} ({date})\n"
+            elif len(score_info) == 2:
+                score, name = score_info
+                high_scores_str += f"{i+1}. {name}: {score}\n"
         messagebox.showinfo("High Scores", high_scores_str)
     
     def open_settings(self):
