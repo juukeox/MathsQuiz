@@ -11,7 +11,7 @@ class MathQuizApp:
         self.score = 0
         self.timer_seconds = 30  # Initial timer value in seconds
         self.current_question = None
-        self.questions_answered = 0
+        self.questions_attempted = 0
 
         self.difficulty_var = tk.StringVar()
         self.difficulty_var.set("Medium")
@@ -77,7 +77,7 @@ class MathQuizApp:
 
     def reset_game(self):
         self.score = 0
-        self.questions_answered = 0
+        self.questions_attempted = 0
         self.update_score_label()
         self.update_timer_label()
         self.load_high_scores()
@@ -139,10 +139,11 @@ class MathQuizApp:
             if float(user_answer) == correct_answer:
                 self.score += 1
                 self.update_score_label()
-                self.questions_answered += 1
+                self.questions_attempted += 1
                 self.next_question() 
             else:
                 self.next_question()
+                self.questions_attempted += 1
         except:
             messagebox.showerror("Invalid Input", "Please enter a valid numerical answer.")
 
@@ -164,7 +165,11 @@ class MathQuizApp:
         if player_name:
             self.save_high_score(player_name)
 
-    def save_high_score(self, player_name="Unknown"): #add date to arguments?
+    def high_score(self):
+        difficulty_scores = {"Hard":2, "Medium":1.3, "Easy":1}
+        self.final_score = (self.score - (self.questions_attempted - self.score)) * difficulty_scores   #!!! simplify lol
+
+    def save_high_score(self, player_name="Unknown"): 
             current_date = datetime.now().strftime("%Y-%m-%d")
             self.high_scores.append((self.score, player_name or "Unknown", current_date))
             self.high_scores.sort(reverse=True)
