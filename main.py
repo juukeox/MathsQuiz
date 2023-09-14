@@ -9,9 +9,11 @@ class MathQuizApp:
         self.root.title("Math Quiz App")
 
         self.score = 0
+        self.final_score = 0
         self.timer_seconds = 30  # Initial timer value in seconds
         self.current_question = None
         self.questions_attempted = 0
+
 
         self.difficulty_var = tk.StringVar()
         self.difficulty_var.set("Medium")
@@ -77,6 +79,7 @@ class MathQuizApp:
 
     def reset_game(self):
         self.score = 0
+        self.final_score = 0
         self.questions_attempted = 0
         self.update_score_label()
         self.update_timer_label()
@@ -156,9 +159,13 @@ class MathQuizApp:
     def end_game(self):  #not being activated
         self.game_in_progress = False
         self.start_button.config(state=tk.NORMAL)
-        messagebox.showinfo("Game Over", f"Your final score: {self.score}")
+        self.high_score()
+        messagebox.showinfo("Game Over", f"Your final score: {self.final_score}")
         self.save_high_score()
         self.load_high_scores()
+        self.timer_seconds = 30 #!!! whatever it was set to before?
+        self.update_timer_label
+    #    self.update_score_label
     
     def submit_username(self):
         player_name = self.username_entry.get()
@@ -167,24 +174,25 @@ class MathQuizApp:
 
     def high_score(self):
         difficulty_scores = {"Hard":2, "Medium":1.3, "Easy":1}
-        self.final_score = (self.score - (self.questions_attempted - self.score)) * difficulty_scores   #!!! simplify lol
+        multiplier = difficulty_scores.get(self.difficulty_var.get(), 1)
+        self.final_score = round((self.score - (self.questions_attempted - self.score)) * multiplier, 1) 
 
     def save_high_score(self, player_name="Unknown"): 
             current_date = datetime.now().strftime("%Y-%m-%d")
-            self.high_scores.append((self.score, player_name or "Unknown", current_date))
+            self.high_scores.append((self.final_score, player_name or "Unknown", current_date))
             self.high_scores.sort(reverse=True)
             if len(self.high_scores) > 10:
                 self.high_scores = self.high_scores[:10]
             
             with open("high_scores.txt", "w") as file:
                 for score, name, date in self.high_scores:
-                    file.write(f"{score}: {name} ({date})\n")
+                    file.write(f"{score:.1f}: {name} ({date})\n")
 
     def load_high_scores(self):
         try:
             with open("high_scores.txt", "r") as file:
                 high_scores = file.readlines()
-                self.high_scores = [(int(score.split(":")[0].strip()), score.split(":")[1].strip()) for score in high_scores]
+                self.high_scores = [(float(score.split(":")[0].strip()), score.split(":")[1].strip()) for score in high_scores]
                 self.high_scores.sort(reverse=True)
         except FileNotFoundError:
             self.high_scores = []
@@ -256,7 +264,5 @@ if __name__ == "__main__":
     app = MathQuizApp(root)
     root.mainloop()
 
-    # edit problem function so no questions have 2+ decimal places. Can answer to 1 decimal place?
-    #timer doesn't go down
     #layout
     # scoreboard is an average BUT correct answers are more valuable on longer runs
