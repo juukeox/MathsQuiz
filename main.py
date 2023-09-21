@@ -1,4 +1,5 @@
 import tkinter as tk
+import tkinter.ttk as ttk
 import random
 from tkinter import messagebox
 from datetime import datetime
@@ -261,8 +262,12 @@ class MathQuizApp:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    style = ttk.Style()
+    style.theme_use("alt")
+    root.configure(bg="white")  # Set the background color to green
     app = MathQuizApp(root)
     root.mainloop()
+  
 
     #layout
     # scoreboard is an average BUT correct answers are more valuable on longer runs
