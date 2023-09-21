@@ -19,44 +19,44 @@ class MathQuizApp:
         self.difficulty_var = tk.StringVar()
         self.difficulty_var.set("Medium")
 
-        self.problem_label = tk.Label(root, text="", font=("Arial", 24))
+        self.problem_label = ttk.Label(root, text="", font=("Arial", 24), background="green")
         self.problem_label.pack(pady=20)
 
-        self.answer_entry = tk.Entry(root, font=("Arial", 24))
+        self.answer_entry = ttk.Entry(root, font=("Arial", 24))
         self.answer_entry.pack(pady=10)
 
-        self.check_button = tk.Button(root, text="Check Answer", command=self.check_answer)
+        self.check_button = ttk.Button(root, text="Check Answer", command=self.check_answer)
         self.check_button.pack(pady=10)
         self.root.bind("<Return>", lambda event=None: self.check_answer())
 
 
-        self.timer_label = tk.Label(root, text="", font=("Arial", 18))
+        self.timer_label = ttk.Label(root, text="", font=("Arial", 18), background="green")
         self.timer_label.pack()
 
-        self.score_label = tk.Label(root, text="Score: 0", font=("Arial", 18))
+        self.score_label = ttk.Label(root, text="Score: 0", font=("Arial", 18), background="green")
         self.score_label.pack()
 
-        self.start_button = tk.Button(root, text="Start Game", command=self.start_game)
+        self.start_button = ttk.Button(root, text="Start Game", command=self.start_game)
         self.start_button.pack(pady=20)
 
-        self.high_scores_button = tk.Button(root, text="High Scores", command=self.show_high_scores)
+        self.high_scores_button = ttk.Button(root, text="High Scores", command=self.show_high_scores)
         self.high_scores_button.pack()
 
         self.high_scores = []  # List to store high scores (e.g., (score, player_name))
 
-        self.settings_button = tk.Button(root, text="⚙️ Settings", command=self.open_settings)
+        self.settings_button = ttk.Button(root, text="⚙️ Settings", command=self.open_settings)
         self.settings_button.pack(side=tk.BOTTOM, pady =10)
 
         # Add a label for the username entry
-        self.username_label = tk.Label(root, text="Enter Your Name:", font=("Arial", 18))
+        self.username_label = ttk.Label(root, text="Enter Your Name:", font=("Arial", 18), background="green")
         self.username_label.pack(pady=10)
 
         # Add an entry widget for the username
-        self.username_entry = tk.Entry(root, font=("Arial", 18))
+        self.username_entry = ttk.Entry(root, font=("Arial", 18))
         self.username_entry.pack(pady=5)
 
         # Add a button to submit the username
-        self.submit_button = tk.Button(root, text="Submit", command=self.submit_username)
+        self.submit_button = ttk.Button(root, text="Submit", command=self.submit_username)
         self.submit_button.pack(pady=10)
 
         self.load_high_scores()  # Load high scores from a file if available
@@ -169,18 +169,16 @@ class MathQuizApp:
     #    self.update_score_label
     
     def submit_username(self):
-        player_name = self.username_entry.get()
-        if player_name:
-            self.save_high_score(player_name)
+        self.player_name = self.username_entry.get()
 
     def high_score(self):
         difficulty_scores = {"Hard":2, "Medium":1.3, "Easy":1}
         multiplier = difficulty_scores.get(self.difficulty_var.get(), 1)
         self.final_score = round((self.score - (self.questions_attempted - self.score)) * multiplier, 1) 
 
-    def save_high_score(self, player_name="Unknown"): 
+    def save_high_score(self): 
             current_date = datetime.now().strftime("%Y-%m-%d")
-            self.high_scores.append((self.final_score, player_name or "Unknown", current_date))
+            self.high_scores.append((self.final_score, self.player_name or "Unknown", current_date))
             self.high_scores.sort(reverse=True)
             if len(self.high_scores) > 10:
                 self.high_scores = self.high_scores[:10]
@@ -263,8 +261,8 @@ class MathQuizApp:
 if __name__ == "__main__":
     root = tk.Tk()
     style = ttk.Style()
-    style.theme_use("alt")
-    root.configure(bg="white")  # Set the background color to green
+    style.theme_use("clam")
+    root.configure(bg="green")  # Set the background color to green
     app = MathQuizApp(root)
     root.mainloop()
   
